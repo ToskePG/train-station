@@ -26,6 +26,10 @@ public class Menu {
 			System.out.println("Unesite 7 za unos vozaca: ");
 			System.out.println("Unesite 8 za unos polaska: ");
 			System.out.println("Unesite 9 za pretragu zaposlenog: ");
+			System.out.println("Unesite 10 za povezivanje radnika i lokomotive: ");
+			System.out.println("Unesite 11 za unos teretne lokomitve");
+			System.out.println("Unesite 12 za unos putnicke lokomotive: ");
+			System.out.println("Unesite 13 za povezivanje vozaca i medicinskog pregleda: ");
 			int a = input.nextInt();
 			if(a == 1) {
 				// jmbg
@@ -207,9 +211,81 @@ public class Menu {
 				}
 				System.out.println(databaseConnection.findWorkerByJMBG(jmbg));
 			}else if(a == 10) {
-				System.out.println("Unesite radnika i lokomotivu koju zelite da povezete: ");
-				System.out.println("Radnik: ");
-				
+				System.out.println("Unesite jmbg radnika: ");
+				String jmbg = input.nextLine();
+				jmbg = input.nextLine();
+				boolean jmbgCheck = checkJMBG(jmbg);
+				while(!jmbgCheck || databaseConnection.checkIfWorkerExists(jmbg)) {
+					System.out.println("Nepravilan unos JMBG. ");
+					jmbg = input.nextLine();
+					jmbgCheck = checkJMBG(jmbg);
+				}
+				System.out.println("Unesite ime i prezime radnika: ");
+				String ime = input.nextLine();
+				String prezime = input.nextLine();
+				System.out.println("Unesite datum zaposlenja: ");
+				System.out.println("Unesite datum zaposlenja");
+				String date = input.nextLine();
+				boolean dateCheck = checkIfDateIsValid(date);
+				while(!dateCheck) {
+					System.out.println("Nevalidan format datuma. Unesite ponovo. (Traženi format je yyyy-MM-dd)");
+					date = input.nextLine();
+					dateCheck = checkIfDateIsValid(date);
+				}
+				System.out.println("Unesite godine iskustva");
+				int yearsOfExp = input.nextInt();
+				Worker w = new Worker(jmbg, ime, prezime, yearsOfExp, date);
+				System.out.println("Unesite broj vagona i godinu proizvodnje vase lokomotive: ");
+				int numOfWagons = input.nextInt();
+				int yearOfManufacture = input.nextInt();
+				Locomotive l = new Locomotive(numOfWagons, yearOfManufacture);
+				boolean flag = databaseConnection.insertWorkerLocomitive(w, l);
+				if(flag) {
+					System.out.println("Uspjeno dodata informacija. ");
+				}else {
+					System.out.println("Nepravilan unos podataka. ");
+				}
+			}else if(a == 11) {
+				System.out.println("Unesite id lokomotive: ");
+				int locomotiveID = input.nextInt();
+				boolean indicator = databaseConnection.checkIfLocomotiveExist(locomotiveID);
+				while(!indicator) {
+					System.out.println("ID lokomotive nije validan. Pokusajte ponovo");
+					locomotiveID = input.nextInt();
+					indicator = databaseConnection.checkIfLocomotiveExist(locomotiveID);
+				}
+				boolean flag = databaseConnection.insertCargo(locomotiveID);
+				if(flag) {
+					System.out.println("Uspjesno unijeta teretna lokomotiva. ");
+				}else {
+					System.out.println("Greska pri unosu teretne lokomotive. ");
+				}
+			}else if(a == 12) {
+				System.out.println("Unesite id lokomotive: ");
+				int locomotiveID = input.nextInt();
+				boolean indicator = (databaseConnection.checkIfLocomotiveExist(locomotiveID) && !databaseConnection.isCargo(locomotiveID));
+				while(!indicator) {
+					System.out.println("ID lokomotive nije validan. Pokusajte ponovo");
+					locomotiveID = input.nextInt();
+					indicator = (databaseConnection.checkIfLocomotiveExist(locomotiveID) && !databaseConnection.isCargo(locomotiveID));
+				}
+				boolean flag = databaseConnection.insertWayfairing(locomotiveID);
+				if(flag) {
+					System.out.println("Uspjesno unijeta putnicka lokomotiva. ");
+				}else {
+					System.out.println("Greska pri unosu putnicka lokomotive. ");
+				}
+			}else if(a == 13) {
+				System.out.println("Unesite id vozaca: ");
+				int driverID = input.nextInt();
+				System.out.println("Unesite ID medicinskog pregleda: ");
+				int reviewID = input.nextInt();
+				boolean flag = databaseConnection.connectDriverAndMedical(driverID, reviewID);
+				if(flag) {
+					System.out.println("Vozac i pregled su povezani. ");
+				}else {
+					System.out.println("Greska pri povezivanju. ");
+				}
 			}
 		}
 	}

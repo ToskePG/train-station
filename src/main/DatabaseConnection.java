@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Scanner;
 
 import data.Assistant;
 import data.Driver;
@@ -16,6 +17,8 @@ import data.Wagon;
 import data.Worker;
 
 public class DatabaseConnection {
+	
+	Scanner input = new Scanner(System.in);
 	
 	private String url;
 	private String user;
@@ -317,11 +320,114 @@ public class DatabaseConnection {
 			close(connection);
 			return true;
 		}catch(SQLException e) {
+			// e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean insertCargo(int ID) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO teretna_lokomotiva (lokomotiva_id) VALUES (" +ID+ ");";
+		try {
+			Statement st = connection.createStatement();
+			st.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
 	
+	public boolean insertWayfairing(int ID) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO putnicka_lokomotiva (lokomotiva_id) VALUES (" +ID+ ");";
+		try {
+			Statement st = connection.createStatement();
+			st.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	
+	public boolean isCargo(int ID) {
+		Connection conn = open();
+		String sql = "";
+		sql = "SELECT * FROM teretna_lokomotiva WHERE lokomotiva_id = " +ID+ ";";
+		try {
+			Statement st = conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(conn);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean checkForDriverId(int id) {
+		Connection connection = open();
+		String sql = "SELECT * FROM vozac WHERE id = " +id+ ";";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(connection);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean checkReviewId(int id) {
+		Connection connection = open();
+		String sql = "SELECT * FROM medicinski_pregled WHERE id = " +id+ ";";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(connection);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean connectDriverAndMedical(int driverId, int reviewId) {
+		Connection connection = open();
+		boolean flag = (checkForDriverId(driverId) && checkReviewId(reviewId));
+		while(!flag) {
+			System.out.println("Podaci nisu validni. Pokusajte ponovo");
+			driverId = input.nextInt();
+			reviewId = input.nextInt();
+			flag = (checkForDriverId(driverId) && checkReviewId(reviewId));
+		}
+		String sql = "INSERT INTO vozac_pregled (vozac_id,medicinski_pregled_id) VALUES (" +driverId+ "," +reviewId+ ");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 	
 }
