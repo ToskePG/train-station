@@ -1,19 +1,14 @@
 package data;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Ticket {
 	
-	String pattern = "yyyy-MM-dd";
-	SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 	
 	private String fullName;
 	private int ticketNumber;
 	private double ticketPrice;
-	private Date ticketDate;
+	private String ticketDate;
 	
-	public Ticket(String fullName, int ticketNumber, double ticketPrice, Date ticketDate) {
+	public Ticket(String fullName, int ticketNumber, double ticketPrice, String ticketDate) {
 		this.fullName = fullName;
 		this.ticketNumber = ticketNumber;
 		this.ticketPrice = ticketPrice;
@@ -38,10 +33,10 @@ public class Ticket {
 	public void setTicketPrice(double ticketPrice) {
 		this.ticketPrice = ticketPrice;
 	}
-	public Date getTicketDate() {
+	public String getTicketDate() {
 		return ticketDate;
 	}
-	public void setTicketDate(Date ticketDate) {
+	public void setTicketDate(String ticketDate) {
 		this.ticketDate = ticketDate;
 	}
 

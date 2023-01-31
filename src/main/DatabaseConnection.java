@@ -6,6 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import data.Assistant;
+import data.Driver;
+import data.Locomotive;
+import data.MedicalReview;
+import data.Ticket;
+import data.Trip;
+import data.Wagon;
+import data.Worker;
+
 public class DatabaseConnection {
 	
 	private String url;
@@ -36,6 +45,283 @@ public class DatabaseConnection {
 			return false;
 		}
 	}
+	
+	public boolean insertTicket(Ticket t) {
+		Connection conn = open();
+		String sql = "";
+			sql = "INSERT INTO karta (ime_prezime,broj,cijena,datum_prodaje) VALUES ('" + t.getFullName() + "'," + t.getTicketNumber() + ","
+					+ t.getTicketPrice() + ",'" + t.getTicketDate() + "');";
+
+		try {
+			Statement st = conn.createStatement();
+			st.executeUpdate(sql);
+			close(conn);
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("Nije moguce izvrsiti dodavanje! ");
+		}
+		return false;
+	}
+	
+	public boolean insertWorker(Worker w) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO zaposleni (jmbg,ime,prezime,radni_staz,datum_zaposlenja) VALUES ('" + w.getJmbg() + "','" + w.getFirstName() + "','" + w.getLastName()
+				+ "'," + w.getYearsOfExperience() + ",'" + w.getDateOfEmployment() + "');"; 
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean insertMedicalReview(MedicalReview m) {
+		Connection connection = open();
+		String sql = "";
+ 		sql = "INSERT INTO medicinski_pregled (nalaz,datum) VALUES ('" +m.getHealthReport()+ "','" +m.getDateOfReview()+ "');";
+ 		try {
+ 			Statement statement = connection.createStatement();
+ 			statement.executeUpdate(sql);
+ 			close(connection);
+ 			return true;
+ 		}catch(SQLException e) {
+ 			e.printStackTrace();
+ 			return false;
+ 		}
+	}
+	
+	public boolean insertWagon(Wagon w) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO vagon (broj_sjedista,klasa,godina_proizvodnje,lokomotiva_id) VALUES (" +w.getNumberOfSeats() + "," +w.getWagonClass()+ "," +w.getYearOfManufacture()
+				+"," +w.getLocomotiveId()+ ");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean insertLocomotive(Locomotive l) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO lokomotiva (broj_vagona,godiste_proizvodnje) VALUES (" +l.getNumberOfWagons()+ "," +l.getYearOfManufacture()+ ");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean insertComposition(int number) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO kompozicija (id) VALUES (" +number+");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean insertDriver(Driver driver) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO vozac (sati_voznje,zaposleni_id) VALUES (" +driver.getWorkHours()+"," +driver.getWorkerId()+");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public boolean insertTrip(Trip trip) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO polazak (destinacija, vrijeme, datum, karta_id, kompozicija_id, vozac_id) VALUES ('"
+		+trip.getDestination()+"','"
+		+trip.getTime()+"','"
+		+trip.getTripStart()+"',"
+		+trip.getTripCardId()+","
+		+trip.getTripCompositionId()+","
+		+trip.getDriverId()+");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public String findWorkerByJMBG(String jmbg) {
+		Connection connection = open();
+		String sql = "SELECT * FROM zaposleni WHERE jmbg = '" +jmbg+ "';";
+		try {
+			Statement statemenet = connection.createStatement();
+			ResultSet rs = statemenet.executeQuery(sql);
+			if(rs.next()) {
+				return rs.getString("ime") + " " + rs.getString("prezime");
+			}
+			close(connection);
+			return "Nema radnika sa odabranim JMBG";
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return "Nema radnika sa odabranim JMBG";
+	}
+	
+	public boolean checkIfWorkerExists(String jmbg) {
+		Connection connection = open();
+		String sql = "SELECT * FROM zaposleni WHERE jmbg = '" +jmbg+ "';";
+		try {
+			Statement statemenet = connection.createStatement();
+			ResultSet rs = statemenet.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(connection);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean checkForWorkerId(int id) {
+		Connection connection = open();
+		String sql = "SELECT * FROM zaposleni WHERE id = " +id+ ";";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(connection);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean checkIfLocomotiveExist(int number) {
+		Connection connection = open();
+		String sql = "SELECT * FROM lokomotiva WHERE id = " +number+ ";";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(connection);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean checkIfCompositionExists(int number) {
+		Connection connection = open();
+		String sql = "SELECT * FROM kompozicija WHERE id = " +number+ ";";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(rs.next()) {
+				return true;
+			}
+			close(connection);
+			return false;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean insertAssistant(Assistant assistant) {
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO pomocnik (zaposleni_id) VALUES (" +assistant.getWorkerId()+ ");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public int findWorkerId(Worker w) {
+		Connection connection = open();
+		String sql = "";
+		sql = "SELECT id FROM zaposleni WHERE jmbg = '" +w.getJmbg()+ "');";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			return rs.getInt("id");
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	public int findLocomitiveId(Locomotive l) {
+		Connection connection = open();
+		String sql = "";
+		sql = "SELECT id FROM lokomotiva WHERE jmbg = '" +l.getNumberOfWagons()+ "," +l.getYearOfManufacture()+ ");";
+		try {
+			Statement st = connection.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			return rs.getInt("id");
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	public boolean insertWorkerLocomitive(Worker w, Locomotive l) {
+		int workerID = findWorkerId(w);
+		int locomotiveId = findLocomitiveId(l);
+		Connection connection = open();
+		String sql = "";
+		sql = "INSERT INTO pomocnik (zaposleni_id) VALUES (" +workerID+ "," +locomotiveId+ ");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	
 	
 }
