@@ -2,6 +2,8 @@ package main;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import data.Driver;
@@ -30,7 +32,16 @@ public class Menu {
 			System.out.println("Unesite 11 za unos teretne lokomitve");
 			System.out.println("Unesite 12 za unos putnicke lokomotive: ");
 			System.out.println("Unesite 13 za povezivanje vozaca i medicinskog pregleda: ");
-			int a = input.nextInt();
+			System.out.println("Unesite 14 za prikaz svih zaposlenih i njihovih podataka: ");
+			System.out.println("Unesite 15 za prikaz svih vozaca i njihovih podataka: ");
+			System.out.println("Unesite 16 za prikaz svih medicinskih pregleda:  ");
+			System.out.println("Unesite 17 za brisanje vozaca: ");
+			System.out.println("Unesite 18 za brisanje pomocnika: ");
+			System.out.println("Unesite 19 za promjenu cijene karte: ");
+			System.out.println("Unesite 20 za prikaz podataka o prodatim kartama: ");
+			System.out.println("Unesite 0 za prekid programa. ");
+			
+			int a = checkInput(input.nextLine(), "Nevalidan unos u meniju");
 			if(a == 1) {
 				// jmbg
 				System.out.println("Unesite matični broj radnika: ");
@@ -286,6 +297,63 @@ public class Menu {
 				}else {
 					System.out.println("Greska pri povezivanju. ");
 				}
+			}else if(a == 14) {
+				List<Worker> workers = databaseConnection.getAllWorkers();
+				for(int i = 0; i < workers.size(); i++) {
+					System.out.println(workers.get(i).toString());
+				}
+			}else if(a == 15) {
+				System.out.println("Vozaci i njihovi podaci su: ");
+				List<Worker> workers = databaseConnection.getAllDrivers();
+				for(int i = 0; i < workers.size(); i++) {
+					System.out.println(workers.get(i).toString());
+				}
+			}else if(a == 16) {
+				System.out.println("Medicinski pregledi: ");
+				List<MedicalReview> reviews = databaseConnection.getAllReviews();
+				for(int i = 0; i < reviews.size(); i++) {
+					System.out.println(reviews.get(i).toString());
+				}
+			}else if(a == 17) {
+				System.out.println("Unesite id broj radnika: ");
+				int id = input.nextInt();
+				boolean flag = databaseConnection.deleteDriver(id);
+				if(flag) {
+					System.out.println("Vozac je uspjesno uklonjen. ");
+				}else {
+					System.out.println("Greska pri uklanjanju vozaca. ");
+				}
+			}else if(a == 18) {
+				System.out.println("Unesite id broj pomocnika: ");
+				int id = input.nextInt();
+				boolean flag = databaseConnection.deleteAssistent(id);
+				if(flag) {
+					System.out.println("Pomocnik je uspjesno uklonjen. ");
+				}else {
+					System.out.println("Greska pri uklanjanju pomocnika. ");
+				}
+			}else if(a == 19) {
+				System.out.println("Unesite id karte koju zelite da azurirate: ");
+				int id = input.nextInt();
+				System.out.println("Unesite novu cijenu karte: ");
+				int newPrice = input.nextInt();
+				boolean flag = databaseConnection.updateTicket(newPrice, id);
+				if(flag) {
+					System.out.println("Uspjesno azurirana cijena karte! ");
+				}else {
+					System.out.println("Greska pri azuriranju karte! ");
+				}
+			}else if(a == 20) {
+				List<Ticket> tickets = databaseConnection.getAllTickets();
+				for(int i = 0; i<tickets.size(); i++) {
+					System.out.println(tickets.get(i).toString());
+				}
+			}else if(a == 0) {
+				System.out.println("Gasenje programa.....");
+				System.out.println("Program je ugasen");
+				break;
+			}else {
+				System.out.println("Morate unijeti broj izmedju 0 i 20");
 			}
 		}
 	}
@@ -304,8 +372,6 @@ public class Menu {
 			}
 		}
 	}
-	
-	
 	
 	private int checkInput(String number, String message) {
 		boolean interceptor = true;
@@ -345,6 +411,4 @@ public class Menu {
         }
         return true;
     }
-	
-	
 }

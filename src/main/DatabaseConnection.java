@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import data.Assistant;
@@ -429,5 +431,128 @@ public class DatabaseConnection {
 		}
 	}
 	
+	public List<Worker> getAllWorkers(){
+		Connection connection = open();
+		String sql = "SELECT * FROM zaposleni;";
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			List<Worker> workers= new ArrayList<>();
+			while(resultSet.next()) {
+				Worker w = new Worker(resultSet.getString("jmbg"), resultSet.getString("ime"), resultSet.getString("prezime"), resultSet.getInt("radni_staz"), resultSet.getString("datum_zaposlenja"));
+				workers.add(w);
+			}
+			close(connection);
+			return workers;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
+	public List<Worker> getAllDrivers(){
+		Connection connection = open();
+		String sql = "Select z.*, v.id FROM zaposleni z, vozac v WHERE v.zaposleni_id = z.id;";
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			List<Worker> workers = new ArrayList<>();
+			while(resultSet.next()) {
+				Worker w = new Worker(resultSet.getString("jmbg"), resultSet.getString("ime"), resultSet.getString("prezime"), resultSet.getInt("radni_staz"), resultSet.getString("datum_zaposlenja"));
+				workers.add(w);
+			}
+			close(connection);
+			return workers;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public List<MedicalReview> getAllReviews(){
+		Connection connection = open();
+		String sql = "SELECT * FROM medicinski_pregled";
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			List<MedicalReview> reviews = new ArrayList<>();
+			while(resultSet.next()) {
+				MedicalReview r = new MedicalReview(resultSet.getString("nalaz"), resultSet.getString("datum"));
+				reviews.add(r);
+			}
+			close(connection);
+			return reviews;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean deleteDriver(int id) {
+		Connection connection = open();
+		String sql = "DELETE FROM vozac WHERE vozac.zaposleni_id = " +id+";";
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	public boolean deleteAssistent(int id) {
+		Connection connection = open();
+		String sql = "DELETE FROM pomocnik WHERE pomocnik.zaposleni_id = " +id+";";
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public List<Ticket> getAllTickets(){
+		Connection connection = open();
+		String sql = "SELECT * FROM karta";
+		Statement statement;
+		try {
+			statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			List<Ticket> tickets = new ArrayList<>();
+			while(resultSet.next()) {
+				Ticket t = new Ticket(resultSet.getString("ime_prezime"), resultSet.getInt("broj"), resultSet.getDouble("cijena"), resultSet.getString("datum_prodaje"));
+				tickets.add(t);
+			}
+			close(connection);
+			return tickets;
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean updateTicket(int price,int id) {
+		Connection conn = open();
+		String sql = "UPDATE karta SET karta.cijena = " +price+ " WHERE karta.id = " +id+ ";";
+		Statement statement;
+		try {
+			statement = conn.createStatement();
+			statement.executeUpdate(sql);
+			close(conn);
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

@@ -1,6 +1,7 @@
 package data;
 
 public class Worker {
+	
 	private String jmbg;
 	private String firstName;
 	private String lastName;
@@ -44,5 +45,11 @@ public class Worker {
 	}
 	public void setDateOfEmployment(String dateOfEmployment) {
 		this.dateOfEmployment = dateOfEmployment;
+	}
+	
+	@Override
+	public String toString() {
+		return "Worker [jmbg=" + jmbg + ", firstName=" + firstName + ", lastName=" + lastName + ", yearsOfExperience="
+				+ yearsOfExperience + ", dateOfEmployment=" + dateOfEmployment + "]";
 	}
 }
