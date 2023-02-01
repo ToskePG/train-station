@@ -56,7 +56,6 @@ public class DatabaseConnection {
 		String sql = "";
 			sql = "INSERT INTO karta (ime_prezime,broj,cijena,datum_prodaje) VALUES ('" + t.getFullName() + "'," + t.getTicketNumber() + ","
 					+ t.getTicketPrice() + ",'" + t.getTicketDate() + "');";
-
 		try {
 			Statement st = conn.createStatement();
 			st.executeUpdate(sql);
@@ -128,6 +127,34 @@ public class DatabaseConnection {
 		}catch(SQLException e) {
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	public int findWagonId(Wagon w) {
+		Connection conn = open();
+		String sql = "SELECT id FROM vagon WHERE broj_sjedista = " +w.getNumberOfSeats()+ "AND lokomtiva_id = " +w.getLocomotiveId()+ ";";
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			return rs.getInt(":id");
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	
+	public int insertKuset(Wagon w) {
+		Connection connection = open();
+		String sql = "INSERT INTO kuset (vagon.id,broj_sjedista) VALUES (" + w.getNumberOfSeats() + "," +findWagonId(w)+ ");";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(sql);
+			close(connection);
+			return 1;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return 0;
 		}
 	}
 	
